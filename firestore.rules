@@ -1,0 +1,95 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: inquiries
+// Document ID: auto-generated
+// Fields:
+//   - name: string (required, 1-100 chars) - Full name of the person inquiring
+//   - phone: string (required, 10-20 chars) - Contact phone number
+//   - email: string (optional, valid email) - Contact email address
+//   - type: string (required, enum) - Type of inquiry (Course, Service, etc.)
+//   - message: string (required, 1-2000 chars) - The inquiry message
+//   - createdAt: timestamp (required) - When the inquiry was submitted
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "vipulsolanki.cms@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidInquiry(data) {
+      return hasRequiredFields(['name', 'phone', 'type', 'message', 'createdAt']) &&
+             hasOnlyAllowedFields(['name', 'phone', 'email', 'type', 'message', 'createdAt']) &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.phone is string && data.phone.size() >= 10 && data.phone.size() <= 20 &&
+             (!('email' in data) || isValidEmail(data.email)) &&
+             data.type in [
+               "Course Inquiry (MicroC@re)",
+               "Technical Service (Grow Up Tech)",
+               "Business AMC Support",
+               "CCTV Installation",
+               "Other"
+             ] &&
+             data.message is string && data.message.size() >= 1 && data.message.size() <= 2000 &&
+             data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /inquiries/{inquiryId} {
+      // Allow anyone to submit an inquiry
+      allow create: if isValidInquiry(request.resource.data);
+      
+      // Only admins can read inquiries
+      allow read: if isAdmin();
+      
+      // No updates or deletes allowed for inquiries once submitted
+      allow update, delete: if false;
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      // Only admins can create/update users with roles
+      allow create, update: if isAdmin();
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
