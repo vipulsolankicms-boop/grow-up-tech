@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { useState } from 'react';
 
 const images = [
   {
@@ -22,7 +23,7 @@ const images = [
     category: 'Service'
   },
   {
-    url: '/webapp-imgs/repair-service.jpg',
+    url: '/webapp-imgs/02repair-station.png',
     title: 'Expert Laptop Repair',
     category: 'Service'
   },
@@ -34,6 +35,11 @@ const images = [
 ];
 
 export default function Gallery() {
+  const [activeCategory, setActiveCategory] = useState('All');
+  const filteredImages = activeCategory === 'All'
+    ? images
+    : images.filter((image) => image.category === activeCategory);
+
   return (
     <section id="gallery" className="section-padding">
       <div className="max-w-7xl mx-auto">
@@ -48,7 +54,13 @@ export default function Gallery() {
             {['All', 'Training', 'Service', 'Installation'].map((tab) => (
               <button
                 key={tab}
-                className="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border border-border hover:bg-primary hover:text-white hover:border-primary transition-all"
+                type="button"
+                onClick={() => setActiveCategory(tab)}
+                className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border transition-all ${
+                  activeCategory === tab
+                    ? 'bg-primary text-white border-primary'
+                    : 'border-border hover:bg-primary hover:text-white hover:border-primary'
+                }`}
               >
                 {tab}
               </button>
@@ -57,7 +69,7 @@ export default function Gallery() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {images.map((image, index) => (
+          {filteredImages.map((image, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.95 }}
