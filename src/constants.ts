@@ -296,7 +296,7 @@ export const SERVICES: Service[] = [
     title: 'Laptop & Desktop Repair',
     description: 'Expert hardware and software troubleshooting for all major brands.',
     icon: 'Laptop',
-    image: '/webapp-imgs/repair-service.jpg',
+    image: '/webapp-imgs/02repair-station.png',
     category: 'Repair',
     features: [
       'Motherboard level chip repairing',

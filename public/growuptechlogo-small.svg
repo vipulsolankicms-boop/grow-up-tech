@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Grow Up Tech Logo</title>
+  <desc id="desc">Compact MicroCare and Grow Up Tech monogram.</desc>
+  <rect width="128" height="128" rx="28" fill="#0f172a"/>
+  <path d="M28 82V39h12l24 28 24-28h12v43H87V58L67 82h-6L41 58v24H28Z" fill="#ffffff"/>
+  <path d="M30 94h68" stroke="#22c55e" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="98" cy="34" r="10" fill="#38bdf8"/>
+</svg>

@@ -5,12 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Phone, Mail, MapPin, Clock, MessageSquare, CheckCircle2, Loader2 } from 'lucide-react';
-import { db, handleFirestoreError, OperationType } from '@/firebase';
+import { db } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -22,6 +23,7 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError('');
 
     try {
       const path = 'inquiries';
@@ -38,7 +40,8 @@ export default function Contact() {
         message: ''
       });
     } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, 'inquiries');
+      console.error('Inquiry submission failed:', error);
+      setSubmitError("We couldn't send your inquiry. Please try again or contact us on WhatsApp.");
     } finally {
       setIsSubmitting(false);
     }
@@ -213,6 +216,11 @@ export default function Contact() {
                         required 
                       />
                     </div>
+                    {submitError && (
+                      <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                        {submitError}
+                      </p>
+                    )}
                     <Button 
                       type="submit" 
                       className="w-full h-12 text-base font-bold"
