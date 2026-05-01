@@ -11,7 +11,7 @@ export default function Logo({ className = "", size = 40, showText = true }: Log
     <div className={`flex items-center gap-3 ${className}`}>
       <div className="relative">
         <img 
-          src="/growuptechlogo-small.svg" 
+          src="/growuptechlogo-small.png" 
           alt="Grow Up Tech Logo" 
           style={{ width: size, height: size }}
           className="object-contain"
